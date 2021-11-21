@@ -1,9 +1,12 @@
 from __future__ import print_function
 from pptx import Presentation
 import argparse
-import liturgyParser
 import common
 import re
+import helpers
+
+bijbelboeken = ['genesis']
+liedboeken = ['gezang','levenslied','lied','opwekking','psalm']
 
 def parse_args():
     """ Setup the input and output arguments for the script
@@ -32,12 +35,16 @@ def readInputFile(inputFile):
         line = line.strip()
         if not line:
             continue
-        getLiturgyLineContent(line, liturgyParser.getLiturgyPartTypeFromLiturgyLine(line))
+        getLiturgyLineContent(line)
 
-def getLiturgyLineContent(line, type):
+def getLiturgyLineContent(line):
     print("Slides maken voor: {}".format(line))
-    if type == 'song':
-        source = line[0:line.find(' ')]
+    source = line[0:line.find(' ')]
+    
+    if helpers.get_bijbelboek(line) != None:
+        print("Opzoeken bijbeltekst")
+        
+    if source in liedboeken:
         source_path = "bronnen/liederen/{}.txt".format(source)
         print("Als bron wordt gebruikt: {}".format(source_path))
         # haal liedtekst op
@@ -52,8 +59,6 @@ def getLiturgyLineContent(line, type):
         
         maak_lied_slide(liederen)
         
-    elif type == 'scripture':
-        source = line[0:line.find(' ')]
     else:
         print("Dit type slide wordt (nog) niet ondersteund")
 

@@ -2,6 +2,7 @@ from __future__ import print_function
 from pptx import Presentation
 import argparse
 import liturgyParser
+import common
 import re
 
 def parse_args():
@@ -39,55 +40,15 @@ def getLiturgyLineContent(line, type):
         source = line[0:line.find(' ')]
         source_path = "bronnen/liederen/{}.txt".format(source)
         print("Als bron wordt gebruikt: {}".format(source_path))
-        # uitgangspunt: verzen worden altijd meegegeven als komma-gescheiden lijst.
-        # voorbeeld:
-        #   psalm 4: 1
-        #   gezang 14: 3, 6
-        songNumber = line[line.find(' '):line.find(':')].strip()
-        verses = line[line.find(':')+1:].split(',')
-        print("Liednummer {} verzen {}".format(songNumber, verses))
         # haal liedtekst op
         f = open(source_path, 'r')
-        zoekstring = "^{} {}:".format(source, songNumber)
-        liedGevonden = False
-        versGevonden = False
-        currentVerse = -1
         
-        max_num_lines = 4
-        curr_num_lines = 0
-        
-        # gevonden regels opslaan in 2d array
-        liederen = {}
-        # for verse in verses:
-        #     liederen[verse] = []
-            
-        for regel in f.readlines():
-            regel = regel.strip()
-            # zoek het juiste lied op
-            if(re.search(zoekstring, regel)):
-                liedGevonden = True
-                continue
-            # bij het volgende lied stoppen
-            if(re.search("^{} ".format(source), regel)):
-                if liedGevonden:
-                    break
-            if liedGevonden:
-                if(regel in verses):
-                    currentVerse = regel
-                    versGevonden = True
-                    liederen[currentVerse] = []
-                    curr_num_lines = 0
-                    continue
-                elif("" == regel):
-                    versGevonden = False
-                if(versGevonden):
-                    if curr_num_lines == max_num_lines:
-                        currentVerse = currentVerse + 'a'
-                        curr_num_lines = 0
-                        # add the new subverse to the dictionary
-                        liederen[currentVerse] = []
-                    liederen[currentVerse].append(regel)
-                    curr_num_lines += 1
+        # alle liederen met verzen 
+        if(source != "opwekking"):
+            liederen = get_lines_from_source(line, source, f)
+        else:
+            # opwekking, zonder verzen
+            liederen = get_opwekking_from_source(line, source, f)
         
         maak_lied_slide(liederen)
         
@@ -95,6 +56,92 @@ def getLiturgyLineContent(line, type):
         source = line[0:line.find(' ')]
     else:
         print("Dit type slide wordt (nog) niet ondersteund")
+
+def get_lines_from_source(line, source, f):
+    # uitgangspunt: verzen worden altijd meegegeven als komma-gescheiden lijst.
+        # voorbeeld:
+        #   psalm 4: 1
+        #   gezang 14: 3, 6
+    songNumber = line[line.find(' '):line.find(':')].strip()
+    verses = line[line.find(':')+1:].split(',')
+    zoekstring = "^{} {}:".format(source, songNumber)
+    print("De volgende zoekstring wordt gebruikt: {}".format(zoekstring))
+    liedGevonden = False
+    versGevonden = False
+    currentVerse = -1
+        
+    max_num_lines = 4
+    curr_num_lines = 0
+        
+        # gevonden regels opslaan in 2d array
+    liederen = {}
+        # for verse in verses:
+        #     liederen[verse] = []
+            
+    for regel in f.readlines():
+        regel = regel.strip()
+            # zoek het juiste lied op
+        if(re.search(zoekstring, regel)):
+            liedGevonden = True
+            continue
+            # bij het volgende lied stoppen
+        if(re.search("^{} ".format(source), regel)):
+            if liedGevonden:
+                break
+        if liedGevonden:
+            if(regel in verses):
+                currentVerse = regel
+                versGevonden = True
+                liederen[currentVerse] = []
+                curr_num_lines = 0
+                continue
+            elif("" == regel or (common.is_integer(regel) and regel not in verses)):
+                versGevonden = False
+            if(versGevonden):
+                if curr_num_lines == max_num_lines:
+                    currentVerse = currentVerse + 'a'
+                    curr_num_lines = 0
+                        # add the new subverse to the dictionary
+                    liederen[currentVerse] = []
+                liederen[currentVerse].append(regel)
+                curr_num_lines += 1
+    return liederen
+
+def get_opwekking_from_source(line, source, f):
+    # uitgangspunt: opwekkingsliederen kennen geen verzen
+    # dus het hele lied wordt altijd gekopieerd.
+    songNumber = line[line.find(' '):].strip()
+    zoekstring = "^{} {}".format(source, songNumber)
+    print("De volgende zoekstring wordt gebruikt: {}".format(zoekstring))
+    liedGevonden = False
+        
+    max_num_lines = 4
+    curr_num_lines = 0
+        
+    # gevonden regels opslaan in 2d array met virtueel en fixed vers nummer '1'
+    liederen = {}
+    currentVerse = 'a'
+    liederen[currentVerse] = [] #initialiseren
+        
+    for regel in f.readlines():
+        regel = regel.strip()
+        # zoek het juiste lied op
+        if(re.search(zoekstring, regel)):
+            liedGevonden = True
+            continue
+        # bij het volgende lied stoppen
+        if(re.search("^{} ".format(source), regel)):
+            if liedGevonden:
+                break
+        if liedGevonden:
+            if curr_num_lines == max_num_lines:
+                currentVerse = currentVerse + 'a'
+                curr_num_lines = 0
+                # add the new subverse to the dictionary
+                liederen[currentVerse] = []
+            liederen[currentVerse].append(regel)
+            curr_num_lines += 1
+    return liederen
         
 def maak_lied_slide(inhoud):
     for liednummer, regels in inhoud.items():

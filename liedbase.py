@@ -58,7 +58,7 @@ def getLiturgyLineContent(line):
             # opwekking, zonder verzen
             liederen = get_opwekking_from_source(line, source, f)
         
-        maak_lied_slide(liederen)
+        maak_slide(liederen)
         
     else:
         print("Dit type slide wordt (nog) niet ondersteund")
@@ -150,13 +150,13 @@ def get_opwekking_from_source(line, source, f):
     return liederen
         
 def maak_bijbeltekst_slide(line):
-    source = line[0:line.find(' ')].lower().replace(' ', '_')
+    source = helpers.get_source(line)
     sourcepath = "./bronnen/bijbels/BGT/{}.txt".format(source)
-    chapter = line[line.find(' '):line.find(':')].strip()
+    chapter = helpers.get_chapter(line)
     print("Bijbeltekst slide maken met als bron: {}".format(sourcepath))
     print("Boek {} hoofdstuk {} verzen tot en met ".format(source, chapter))
     
-def maak_lied_slide(inhoud):
+def maak_slide(inhoud):
     for liednummer, regels in inhoud.items():
         textslide = prs.slides.add_slide(prs.slide_layouts[0])
         for shape in textslide.placeholders:

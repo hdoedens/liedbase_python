@@ -205,3 +205,17 @@ def get_bijbelboek(line):
     
     # als het eerste deel van 'line' niet met een bijbelboek overeenkomt
     return None
+
+def get_chapter(line):
+    parts = []
+    parts = line.split(':')
+    chapter = parts[0][parts[0].rfind(' '):]
+    return chapter.strip()
+
+def get_source(line):
+    parts = []
+    parts = line.split(':')
+    source = parts[0][:parts[0].rfind(' ')]
+    return source.replace(' ', '_').lower()
+    
+     

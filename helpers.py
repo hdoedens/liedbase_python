@@ -207,15 +207,19 @@ def get_bijbelboek(line):
     return None
 
 def get_chapter(line):
-    parts = []
     parts = line.split(':')
     chapter = parts[0][parts[0].rfind(' '):]
     return chapter.strip()
 
 def get_source(line):
-    parts = []
     parts = line.split(':')
     source = parts[0][:parts[0].rfind(' ')]
-    return source.replace(' ', '_').lower()
+    return source.replace(' ', '_').lower().strip()
     
-     
+def get_van_vers(line):
+    parts = line.split(':')
+    return parts[1][:parts[1].find('-')].strip()
+    
+def get_tot_vers(line):
+    parts = line.split(':')
+    return parts[1][parts[1].find('-')+1:].strip()

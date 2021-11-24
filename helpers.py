@@ -255,17 +255,23 @@ def get_text_from_bible(translation, source, chapter, van, tot):
                     # in deze regel komt het startvers voor 
                     # sloop alle ongeregeldheden er uit
                     # bewaar alles wat na het startvers komt
+                    line = line.split(van)[1]
                     line = re.sub("[0-9]+", " ", line).strip()
                     lines.append(line)
                     
-                if re.search(tot, line):
+                elif re.search(tot, line):
                     # in deze regel komt het eindvers voor 
                     # bewaar alles wat voor het eindvers komt
                     # sloop alle ongeregeldheden er uit
                     # stop het itereren over de bijbel
+                    line = line.split("{}".format(int(tot)+1))[0]
                     line = re.sub("[0-9]+", " ", line).strip()
                     lines.append(line)
                     break
-                         
+                
+                else:
+                    line = re.sub("[0-9]+", " ", line).strip()
+                    lines.append(line)
+                    
     f.close()
     return lines

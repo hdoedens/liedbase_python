@@ -157,6 +157,9 @@ def maak_bijbeltekst_slide(line):
     tot = helpers.get_tot_vers(line)
     print("Bijbeltekst slide maken met als bron: {}".format(sourcepath))
     print("Boek {} hoofdstuk {} verzen {} tot en met {}".format(source, chapter, van, tot))
+    lines = helpers.get_text_from_bible("BGT", source, chapter, van, tot)
+    for line in lines:
+        print(line)
     
 def maak_slide(inhoud):
     for liednummer, regels in inhoud.items():

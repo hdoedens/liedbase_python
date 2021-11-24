@@ -223,3 +223,49 @@ def get_van_vers(line):
 def get_tot_vers(line):
     parts = line.split(':')
     return parts[1][parts[1].find('-')+1:].strip()
+
+def get_text_from_bible(translation, source, chapter, van, tot):
+
+    translation = translation.upper()
+
+    source = source.replace("ë", "e")
+    source = source.replace("ï", "i")
+    source = source.replace("ü", "u")
+    
+    lines = []
+
+    chapterFound = False
+
+    with open("./bronnen/bijbels/BGT/{}.txt".format(source), 'r') as f:
+        for line in f.readlines():
+
+            if (re.search("^#{}$".format(chapter), line)):
+                chapterFound = True
+                continue
+            
+            # we have the line number on which the book starts
+            # continue reading from that line, char by char, until we end up on
+            # the right verse
+            if(chapterFound):
+                # check to see if we are reading the next chapter, if so, return the BiblePartFragment List
+                if (re.search("^#{}$".format(int(chapter) + 1), line)):
+                    break
+                
+                if re.search(van, line):
+                    # in deze regel komt het startvers voor 
+                    # sloop alle ongeregeldheden er uit
+                    # bewaar alles wat na het startvers komt
+                    line = re.sub("[0-9]+", " ", line).strip()
+                    lines.append(line)
+                    
+                if re.search(tot, line):
+                    # in deze regel komt het eindvers voor 
+                    # bewaar alles wat voor het eindvers komt
+                    # sloop alle ongeregeldheden er uit
+                    # stop het itereren over de bijbel
+                    line = re.sub("[0-9]+", " ", line).strip()
+                    lines.append(line)
+                    break
+                         
+    f.close()
+    return lines

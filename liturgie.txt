@@ -1,5 +1,5 @@
-genesis 12:23 - 67
-johannes 3 2: 1 - 6
+genesis 1:2 - 7
+#3 johannes 2: 1 - 6
 #opwekking 8
 #psalm 48:2,3
 #gezang 14:1,3

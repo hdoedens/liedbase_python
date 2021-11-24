@@ -235,9 +235,12 @@ def get_text_from_bible(translation, source, chapter, van, tot):
     lines = []
 
     chapterFound = False
+    startCopy = False
+    stopCopy = False
 
     with open("./bronnen/bijbels/BGT/{}.txt".format(source), 'r') as f:
         for line in f.readlines():
+            line = line.strip()
 
             if (re.search("^#{}$".format(chapter), line)):
                 chapterFound = True
@@ -247,31 +250,61 @@ def get_text_from_bible(translation, source, chapter, van, tot):
             # continue reading from that line, char by char, until we end up on
             # the right verse
             if(chapterFound):
+                
+                #regels die beginne met '=' zijn kopteksten (titels) die negeren we nu nog
+                if line[0:1] == '=':
+                    continue
+                
                 # check to see if we are reading the next chapter, if so, return the BiblePartFragment List
                 if (re.search("^#{}$".format(int(chapter) + 1), line)):
                     break
                 
-                if re.search(van, line):
-                    # in deze regel komt het startvers voor 
-                    # sloop alle ongeregeldheden er uit
-                    # bewaar alles wat na het startvers komt
-                    line = line.split(van)[1]
-                    line = re.sub("[0-9]+", " ", line).strip()
-                    lines.append(line)
-                    
-                elif re.search(tot, line):
-                    # in deze regel komt het eindvers voor 
-                    # bewaar alles wat voor het eindvers komt
-                    # sloop alle ongeregeldheden er uit
-                    # stop het itereren over de bijbel
-                    line = line.split("{}".format(int(tot)+1))[0]
-                    line = re.sub("[0-9]+", " ", line).strip()
-                    lines.append(line)
-                    break
+                # deel de regel op in versnummers met de vers tekst er aan vast
+                parts = re.findall(r'(\d+)?(\D+)', line)
+                # doel
+                targetParts = []
+                for index, part in parts:
+                    # start copieren vanaf hier
+                    if index == van:
+                        startCopy = True
+                        targetParts.append(part)
+                        # print("part: {}. Index: {}",format(part, index))
+                    # elif van == tot:
+                    #     startCopy = False
+                    #     break
+                    elif startCopy and not index == "{}".format(int(tot) + 1):
+                        targetParts.append(part)
+                    elif index == "{}".format(int(tot) + 1):
+                        stopCopy = True
+                        break
+                        
+                # alleen toevoegen als er ook echt iets in staat
+                if targetParts:
+                    lines.append("".join(targetParts))
                 
-                else:
-                    line = re.sub("[0-9]+", " ", line).strip()
-                    lines.append(line)
+                if stopCopy:
+                    break
+                    
+                    # # in deze regel komt het startvers voor 
+                    # # sloop alle ongeregeldheden er uit
+                    # # bewaar alles wat na het startvers komt
+                    # targetline = line.split(van)[1]
+                    # targetline = re.sub("[0-9]+", " ", targetline).strip()
+                    # lines.append(targetline)
+                    
+                # if re.search(tot, line):
+                #     # in deze regel komt het eindvers voor 
+                #     # bewaar alles wat voor het eindvers komt
+                #     # sloop alle ongeregeldheden er uit
+                #     # stop het itereren over de bijbel
+                #     targetline = line.split("{}".format(int(tot)+1))[0]
+                #     targetline = re.sub("[0-9]+", " ", targetline).strip()
+                #     lines.append(targetline)
+                #     break
+                
+                # if startCopy:
+                #     targetline = re.sub("[0-9]+", " ", line).strip()
+                #     lines.append(targetline)
                     
     f.close()
     return lines

@@ -1,6 +1,10 @@
 # liedbase_python
 LiedBase, maar dan in Python geschreven
 
+# Installatie en afhankelijkheden
+1. De inhoud van deze repository
+2. python3
+
 # Regels voor input
 Alle regels in de inputfile die beginnen met '#' worden genegeerd. Verder is het alleen mogelijk om liederen en bijbelteksten te genereren via deze versie van liedbase. Andere slides moeten achteraf handmatig worden toegevoegd.
 

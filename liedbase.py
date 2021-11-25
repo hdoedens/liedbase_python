@@ -8,23 +8,20 @@ import helpers
 bijbelboeken = ['genesis']
 liedboeken = ['gezang','levenslied','lied','opwekking','psalm']
 
+LITURGIE_FILENAME = "liturgie.txt"
+TEMPLATE_FILENAME = "template.pptx"
+TEMPLATE_TEXT_PLACEHOLDER = "Text Placeholder 1"
+OUTPUT_FILENAME = 'presentatie.pptx'
+
 def parse_args():
     """ Setup the input and output arguments for the script
     Return the parsed input and output files
     """
     parser = argparse.ArgumentParser(description='Analyze powerpoint file structure and create chuch presentation with it')
-    parser.add_argument('infile',
-                        type=argparse.FileType('r'),
-                        help='Powerpoint file to be analyzed')
-    parser.add_argument('outfile',
-                        type=argparse.FileType('w'),
-                        help='Output powerpoint')
-    parser.add_argument('liturgieFile',
-                        type=argparse.FileType('r'),
-                        help='Liturgie invoer bestand')
     parser.add_argument('analyze',
                         type=str,
-                        help='"true" voor analyze/"false" voor presentatie genereren')
+                        nargs='?',
+                        help='"analyze" voor analyze presentatie template')
     return parser.parse_args()
 
 def readInputFile(inputFile):
@@ -43,7 +40,8 @@ def getLiturgyLineContent(line):
     source = line[0:line.find(' ')]
     
     if helpers.get_bijbelboek(line) != None:
-        maak_bijbeltekst_slide(line)
+        bijbeltekst = get_bijbeltekst_from_source(line)
+        maak_slides(bijbeltekst)
         
     elif source in liedboeken:
         source_path = "bronnen/liederen/{}.txt".format(source)
@@ -58,7 +56,7 @@ def getLiturgyLineContent(line):
             # opwekking, zonder verzen
             liederen = get_opwekking_from_source(line, source, f)
         
-        maak_slide(liederen)
+        maak_slides(liederen)
         
     else:
         print("Dit type slide wordt (nog) niet ondersteund")
@@ -149,7 +147,7 @@ def get_opwekking_from_source(line, source, f):
             curr_num_lines += 1
     return liederen
         
-def maak_bijbeltekst_slide(line):
+def get_bijbeltekst_from_source(line):
     source = helpers.get_source(line)
     sourcepath = "./bronnen/bijbels/BGT/{}.txt".format(source)
     chapter = helpers.get_chapter(line)
@@ -158,17 +156,19 @@ def maak_bijbeltekst_slide(line):
     print("Bijbeltekst slide maken met als bron: {}".format(sourcepath))
     print("Boek {} hoofdstuk {} verzen {} tot en met {}".format(source, chapter, van, tot))
     lines = helpers.get_text_from_bible("BGT", source, chapter, van, tot)
-    for line in lines:
-        print(line)
+    if not lines:
+        raise Exception("Geen bijbeltekst gevonden voor: {}".format(line))
+    inhoud = {}
+    inhoud['a'] = lines
+    return inhoud
     
-def maak_slide(inhoud):
+def maak_slides(inhoud):
     for liednummer, regels in inhoud.items():
         textslide = prs.slides.add_slide(prs.slide_layouts[0])
         for shape in textslide.placeholders:
             if shape.is_placeholder:
                 phf = shape.placeholder_format
-                # print("placholder format {} met shapenaam {}".format(phf.idx, shape.name))
-                if shape.name == "Text Placeholder 1":
+                if shape.name == TEMPLATE_TEXT_PLACEHOLDER:
                     try:
                         shape.text = "\n".join(regels)
                     except AttributeError:
@@ -204,7 +204,7 @@ def analyze_presentation(output):
                 # Do not overwrite the title which is just a special placeholder
                 try:
                     if 'Title' not in shape.text:
-                        shape.text = 'Placeholder index:{} type:{}'.format(phf.idx, shape.name)
+                        shape.text = '{}'.format(shape.name)
                 except AttributeError:
                     print("{} has no text attribute".format(phf.type))
                 print('{} {}'.format(phf.idx, shape.name))
@@ -215,10 +215,10 @@ def save_pptx(filename):
 
 if __name__ == "__main__":
     args = parse_args()
-    initialize_pptx(args.infile.name)
-    if args.analyze == 'true':
-        print("analyseer het template")
-        analyze_presentation(args.outfile.name)
+    initialize_pptx(TEMPLATE_FILENAME)
+    if args.analyze == 'analyze':
+        print("analyseer het template bestand")
+        analyze_presentation("analyze_{}".format(OUTPUT_FILENAME))
     else:
-        readInputFile(args.liturgieFile.name)
-        save_pptx(args.outfile.name)
+        readInputFile(LITURGIE_FILENAME)
+        save_pptx(OUTPUT_FILENAME)

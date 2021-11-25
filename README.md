@@ -2,6 +2,7 @@
 LiedBase, maar dan in Python geschreven
 
 # Regels voor input
+Alle regels in de inputfile die beginnen met '#' worden genegeerd. Verder is het alleen mogelijk om liederen en bijbelteksten te genereren via deze versie van liedbase. Andere slides moeten achteraf handmatig worden toegevoegd.
 
 ## Bijbelteksten
 Bijbelteksten moeten altijd worden opgegeven met een van en een tot vers. Ook als er maar 1 vers wordt bedoeld.

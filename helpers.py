@@ -267,13 +267,13 @@ def get_text_from_bible(translation, source, chapter, van, tot):
                     # start copieren vanaf hier
                     if index == van:
                         startCopy = True
-                        targetParts.append(part)
-                        # print("part: {}. Index: {}",format(part, index))
-                    # elif van == tot:
-                    #     startCopy = False
-                    #     break
+                        # gecombineerde verzen zien er zo uit '5-6'
+                        # filter de '-' er uit
+                        if part != '-':
+                            targetParts.append(part)
                     elif startCopy and not index == "{}".format(int(tot) + 1):
-                        targetParts.append(part)
+                        if part != '-':
+                            targetParts.append(part)
                     elif index == "{}".format(int(tot) + 1):
                         stopCopy = True
                         break
@@ -284,27 +284,6 @@ def get_text_from_bible(translation, source, chapter, van, tot):
                 
                 if stopCopy:
                     break
-                    
-                    # # in deze regel komt het startvers voor 
-                    # # sloop alle ongeregeldheden er uit
-                    # # bewaar alles wat na het startvers komt
-                    # targetline = line.split(van)[1]
-                    # targetline = re.sub("[0-9]+", " ", targetline).strip()
-                    # lines.append(targetline)
-                    
-                # if re.search(tot, line):
-                #     # in deze regel komt het eindvers voor 
-                #     # bewaar alles wat voor het eindvers komt
-                #     # sloop alle ongeregeldheden er uit
-                #     # stop het itereren over de bijbel
-                #     targetline = line.split("{}".format(int(tot)+1))[0]
-                #     targetline = re.sub("[0-9]+", " ", targetline).strip()
-                #     lines.append(targetline)
-                #     break
-                
-                # if startCopy:
-                #     targetline = re.sub("[0-9]+", " ", line).strip()
-                #     lines.append(targetline)
                     
     f.close()
     return lines

@@ -2,10 +2,27 @@
 LiedBase, maar dan in Python geschreven
 
 # Installatie en afhankelijkheden
-1. De inhoud van deze repository
-2. python3
+* De inhoud van deze repository
+* python3
+* pip3
 
-# Regels voor input
+Installeren van benodigde bibliotheken:
+```pip3 install -r requirements.txt```
+
+Vaste gegevens qua bestandsnamen:
+* Invoerbestand moet de naam 'liturgie.txt' hebben
+* Het te gebruiken PowerPoint template moet de naam 'template.pptx' hebben
+* Het resultaat bestand heet 'presentatie.pptx'
+
+Uitvoeren door:
+```python3 liedbase.py```
+
+Template analyse uitvoeren:
+```python3 liedbase.py analyze```
+
+Hiermee wordt een pptx gegenereerd met de namen van alle text placeholders voor eventuele aanpasing van het template (vereist ook aanpassingen in de code)
+
+# Regels voor liturgie.txt
 Alle regels in de inputfile die beginnen met '#' worden genegeerd. Verder is het alleen mogelijk om liederen en bijbelteksten te genereren via deze versie van liedbase. Andere slides moeten achteraf handmatig worden toegevoegd.
 
 ## Bijbelteksten

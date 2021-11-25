@@ -12,6 +12,7 @@ LITURGIE_FILENAME = "liturgie.txt"
 TEMPLATE_FILENAME = "template.pptx"
 TEMPLATE_TEXT_PLACEHOLDER = "Text Placeholder 1"
 OUTPUT_FILENAME = 'presentatie.pptx'
+MAX_NUM_LINES_PER_SHEET = 4
 
 def parse_args():
     """ Setup the input and output arguments for the script
@@ -73,8 +74,7 @@ def get_lines_from_source(line, source, f):
     liedGevonden = False
     versGevonden = False
     currentVerse = -1
-        
-    max_num_lines = 4
+    
     curr_num_lines = 0
         
         # gevonden regels opslaan in 2d array
@@ -102,7 +102,7 @@ def get_lines_from_source(line, source, f):
             elif("" == regel or (common.is_integer(regel) and regel not in verses)):
                 versGevonden = False
             if(versGevonden):
-                if curr_num_lines == max_num_lines:
+                if curr_num_lines == MAX_NUM_LINES_PER_SHEET:
                     currentVerse = currentVerse + 'a'
                     curr_num_lines = 0
                         # add the new subverse to the dictionary

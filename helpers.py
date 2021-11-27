@@ -1,9 +1,26 @@
 import re
 
+def validate_line(line):
+    
+    if get_bijbelboek(line):
+        #validaeer bijbeltekst
+        if re.search(r"^\d", line):
+            if re.fullmatch(r"^(\d?\s)\w+\s?\d+\s?:\s?\d+\s?-\s?\d+$", line):
+                return True
+        elif re.fullmatch(r"^\w+\s?\d+\s?:\s?\d+\s?-\s?\d+$", line):
+            return True
+        
+    else:
+        # valideer lied
+        if re.fullmatch(r"^\w+\s?\d+\s?:\s?\d+[,\d+]*$", line):
+            return True
+    
+    print("!!! Regel is niet volgens verwachte formaat: {}".format(line))
+    return False
+
 def get_bijbelboek(line):
     # get rid of unwanted spaces
     line = line.strip()
-
 
     if re.search("^gen", line.lower()):
         return "Genesis"
@@ -59,7 +76,7 @@ def get_bijbelboek(line):
     if re.search("job", line.lower()):
         return "Job"
     
-    if re.search("psal", line.lower()):
+    if re.search("psalmen", line.lower()):
         return "Psalmen"
     
     if re.search("spre", line.lower()):

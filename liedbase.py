@@ -34,7 +34,10 @@ def readInputFile(inputFile):
         # treat lines starting with hash-sign as comment
         if not line or line[0:1] == '#':
             continue
-        getLiturgyLineContent(line)
+        
+        #validate syntax
+        if(helpers.validate_line(line.lower())):
+            getLiturgyLineContent(line)
 
 def getLiturgyLineContent(line):
     print("Slides maken voor: {}".format(line))

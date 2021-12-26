@@ -5,14 +5,21 @@ import common
 import re
 import helpers
 
-bijbelboeken = ['genesis']
-liedboeken = ['gezang','levenslied','lied','opwekking','psalm']
-
+# standaard bijbelvertaling
+DEFAULT_BIBLE_TRANSLATION = "BGT"
+# input file voor liturgie
 LITURGIE_FILENAME = "liturgie.txt"
+# pptx template naam
 TEMPLATE_FILENAME = "template.pptx"
-TEMPLATE_TEXT_PLACEHOLDER = "Text Placeholder 1"
+# resulterende output file
 OUTPUT_FILENAME = 'presentatie.pptx'
+# aantal regels bij liederen per sheet
 MAX_NUM_LINES_PER_SHEET = 4
+
+# naam van tekst placeholder in pptx template. waarschijnlijk niet veranderen.
+TEMPLATE_TEXT_PLACEHOLDER = "Text Placeholder 1"
+
+liedboeken = ['gezang','levenslied','lied','opwekking','psalm']
 
 def parse_args():
     """ Setup the input and output arguments for the script
@@ -152,13 +159,13 @@ def get_opwekking_from_source(line, source, f):
         
 def get_bijbeltekst_from_source(line):
     source = helpers.get_source(line)
-    sourcepath = "./bronnen/bijbels/BGT/{}.txt".format(source)
+    sourcepath = "./bronnen/bijbels/{}/{}.txt".format(DEFAULT_BIBLE_TRANSLATION, source)
     chapter = helpers.get_chapter(line)
     van = helpers.get_van_vers(line)
     tot = helpers.get_tot_vers(line)
     print("Bijbeltekst slide maken met als bron: {}".format(sourcepath))
     print("Boek {} hoofdstuk {} verzen {} tot en met {}".format(source, chapter, van, tot))
-    lines = helpers.get_text_from_bible("BGT", source, chapter, van, tot)
+    lines = helpers.get_text_from_bible(DEFAULT_BIBLE_TRANSLATION, source, chapter, van, tot)
     if not lines:
         raise Exception("Geen bijbeltekst gevonden voor: {}".format(line))
     inhoud = {}

@@ -1,6 +1,8 @@
 .DS_Store
 out.pptx
 presentatie.pptx
+# tijdelijke pptx bestanden
+~$*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

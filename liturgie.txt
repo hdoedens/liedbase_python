@@ -1,4 +1,4 @@
-genesis 1: 23 - 36
+exodus 1: 4 - 6
 #3 johannes 2: 1 - 6
 #opwekking 8
 psalm 48:2,3

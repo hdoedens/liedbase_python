@@ -5,7 +5,7 @@
             "type": "python",
             "request": "launch",
             "program": "liedbase.py" ,
-            "args": ["template.pptx", "out.pptx", "liturgie.txt", "false"],
+            "args": [],
             "console": "integratedTerminal"
         }
     ]

@@ -255,7 +255,7 @@ def get_text_from_bible(translation, source, chapter, van, tot):
     startCopy = False
     stopCopy = False
 
-    with open("./bronnen/bijbels/BGT/{}.txt".format(source), 'r') as f:
+    with open("./bronnen/bijbels/{}/{}.txt".format(translation, source), 'r') as f:
         for line in f.readlines():
             line = line.strip()
 

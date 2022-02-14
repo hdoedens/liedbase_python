@@ -4,6 +4,8 @@ import argparse
 import common
 import re
 import helpers
+import sys
+sys.tracebacklimit = 0
 
 # standaard bijbelvertaling
 DEFAULT_BIBLE_TRANSLATION = "BGT"
@@ -167,7 +169,7 @@ def get_bijbeltekst_from_source(line):
     print("Boek {} hoofdstuk {} verzen {} tot en met {}".format(source, chapter, van, tot))
     lines = helpers.get_text_from_bible(DEFAULT_BIBLE_TRANSLATION, source, chapter, van, tot)
     if not lines:
-        raise Exception("Geen bijbeltekst gevonden voor: {}".format(line))
+        raise Exception("\n\n####\nGeen bijbeltekst gevonden voor: {}. Controleer of het bijbelboek en de verzen bestaan en het niet om samengevoegde verzen gaat\n####\n".format(line))
     inhoud = {}
     inhoud['a'] = lines
     return inhoud

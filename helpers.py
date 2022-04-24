@@ -15,6 +15,9 @@ def validate_line(line):
         if re.fullmatch(r"^\w+\s?\d+\s?:\s?\d+[,\d+]*$", line):
             return True
     
+    if re.search(r"^ *opwekking +[0-9]+ *$", line.lower()):
+        return True
+        
     print("!!! Regel is niet volgens verwachte formaat: {}".format(line))
     return False
 
